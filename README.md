@@ -1,70 +1,169 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Assist</title>
 
-@Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  template: `
-  <h1>Care Support Website</h1>
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:#f2f2f2;
+  text-align:center;
+}
 
-  <nav>
-    <button (click)="page='home'">Home</button>
-    <button (click)="page='contact'">Contact</button>
-    <button (click)="page='game'">Game</button>
-  </nav>
+header{
+  background:#075E54;
+  color:white;
+  padding:20px;
+  font-size:22px;
+  font-weight:bold;
+}
 
-  <div [ngSwitch]="page">
+.section{
+  padding:20px;
+}
 
-    <div *ngSwitchCase="'home'">
-      <h2>Welcome</h2>
-      <p>This website is for Blind, Disabled and Old Age people.</p>
-      <button (click)="speak()">🔊 Speak</button>
-    </div>
+button{
+  width:90%;
+  padding:15px;
+  margin:10px;
+  font-size:18px;
+  border:none;
+  border-radius:8px;
+  background:#25D366;
+  color:white;
+}
 
-    <div *ngSwitchCase="'contact'">
-      <h2>Emergency Contacts</h2>
-      <p>Doctor Number: {{doctorNumber}}</p>
-      <p>Emergency Number: {{emergencyNumber}}</p>
-      <p>Contact Number: {{contactNumber}}</p>
-    </div>
+button:hover{
+  background:#128C7E;
+}
 
-    <div *ngSwitchCase="'game'">
-      <h2>Guess Game</h2>
-      <p>Guess number between 1 to 5</p>
-      <input type="number" [(ngModel)]="userGuess">
-      <button (click)="check()">Check</button>
-      <p>{{message}}</p>
-    </div>
+.gameBox{
+  background:white;
+  padding:15px;
+  margin:15px;
+  border-radius:10px;
+  box-shadow:0 2px 5px rgba(0,0,0,0.2);
+}
 
-  </div>
-  `
-})
-export class AppComponent {
+input{
+  width:85%;
+  padding:12px;
+  margin:8px;
+  font-size:16px;
+}
+</style>
+</head>
 
-  page = 'home';
+<body>
 
-  doctorNumber = "9876543210";
-  emergencyNumber = "108";
-  contactNumber = "9999999999";
+<header>
+🧑‍🦯 Smart Assist
+</header>
 
-  randomNumber = Math.floor(Math.random() * 5) + 1;
-  userGuess: number = 0;
-  message = "";
+<div class="section">
 
-  speak() {
-    const speech = new SpeechSynthesisUtterance(
-      "Welcome to Care Support Website"
-    );
-    window.speechSynthesis.speak(speech);
-  }
+<h2>📞 Emergency Contacts</h2>
 
-  check() {
-    if (this.userGuess == this.randomNumber) {
-      this.message = "Correct!";
-    } else {
-      this.message = "Try Again!";
-    }
+<input id="familyInput" value="9321748592">
+<button onclick="callNumber(document.getElementById('familyInput').value)">
+Call Family
+</button>
+
+<input id="doctorInput" value="8104952319">
+<button onclick="callNumber(document.getElementById('doctorInput').value)">
+Call Doctor
+</button>
+
+<input id="newNumber" placeholder="Add New Contact Number">
+<button onclick="addNewContact()">Add & Call</button>
+
+<button onclick="callNumber('112')">
+Emergency Call (112)
+</button>
+
+<hr>
+
+<h2>🎮 Accessible Games</h2>
+
+<!-- Game 1 Voice Tap -->
+<div class="gameBox">
+<h3>Voice Tap Game</h3>
+<p>Tap screen anywhere 10 times</p>
+<p id="tapCount">Taps: 0</p>
+<button onclick="resetTap()">Reset</button>
+</div>
+
+<!-- Game 2 Memory Voice -->
+<div class="gameBox">
+<h3>Memory Voice Game</h3>
+<button onclick="memoryGame()">Hear Random Number</button>
+<p id="memoryText"></p>
+</div>
+
+<!-- Game 3 Big Button Game -->
+<div class="gameBox">
+<h3>Big Button Reaction</h3>
+<button onclick="bigButtonGame()" style="height:100px;font-size:24px;">
+PRESS ME
+</button>
+<p id="bigResult"></p>
+</div>
+
+</div>
+
+<script>
+
+function speak(text){
+  if('speechSynthesis' in window){
+    window.speechSynthesis.cancel();
+    const speech=new SpeechSynthesisUtterance(text);
+    speech.lang="en-US";
+    setTimeout(()=>{window.speechSynthesis.speak(speech);},200);
   }
 }
+
+function callNumber(num){
+  speak("Calling now");
+  window.location.href="tel:"+num;
+}
+
+function addNewContact(){
+  let num=document.getElementById("newNumber").value;
+  if(num!=""){
+    speak("Calling new number");
+    window.location.href="tel:"+num;
+  }else{
+    speak("Please enter number");
+  }
+}
+
+let tapCount=0;
+document.body.addEventListener("click",function(){
+  tapCount++;
+  document.getElementById("tapCount").innerText="Taps: "+tapCount;
+});
+
+function resetTap(){
+  tapCount=0;
+  document.getElementById("tapCount").innerText="Taps: 0";
+}
+
+function memoryGame(){
+  let random=Math.floor(Math.random()*100);
+  document.getElementById("memoryText").innerText="Remember this: "+random;
+  speak("Remember this number "+random);
+}
+
+function bigButtonGame(){
+  let time=Math.floor(Math.random()*5)+1;
+  document.getElementById("bigResult").innerText=
+  "You pressed after "+time+" seconds";
+  speak("Good job");
+}
+
+</script>
+
+</body>
+</html>
