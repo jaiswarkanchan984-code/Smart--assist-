@@ -16,12 +16,13 @@ color:green;
 }
 
 button{
-margin:5px;
-padding:10px 16px;
+margin:6px;
+padding:10px 18px;
 background:green;
 color:white;
 border:none;
 border-radius:6px;
+font-size:15px;
 }
 
 input{
@@ -42,6 +43,7 @@ margin-top:20px;
 
 <button onclick="showHome()">Home</button>
 <button onclick="showContacts()">Contacts</button>
+<button onclick="showGames()">Games</button>
 <button onclick="startVoice()">🎤 Voice</button>
 <button onclick="sos()">🚨 SOS</button>
 
@@ -49,15 +51,20 @@ margin-top:20px;
 
 <script>
 
+/* STORAGE */
+
 let doctors = JSON.parse(localStorage.getItem("doctors")) || [];
 let family = JSON.parse(localStorage.getItem("family")) || [];
 let emergency = JSON.parse(localStorage.getItem("emergency")) || [];
+
+/* HOME */
 
 function showHome(){
 
 document.getElementById("content").innerHTML=
 `
 <h2>Welcome</h2>
+
 <p>This website helps Blind, Disabled and Old Age people.</p>
 
 <button onclick="speak()">🔊 Speak</button>
@@ -75,30 +82,38 @@ speechSynthesis.speak(speech);
 
 }
 
+/* CONTACT SYSTEM */
+
 function showContacts(){
 
 let doctorHTML="";
 doctors.forEach((n,i)=>{
-doctorHTML += `<p>${n}
+doctorHTML+=`
+<p>${n}
 <a href="tel:${n}"><button>Call</button></a>
 <button onclick="deleteDoctor(${i})">Delete</button>
-</p>`;
+</p>
+`;
 });
 
 let familyHTML="";
 family.forEach((n,i)=>{
-familyHTML += `<p>${n}
+familyHTML+=`
+<p>${n}
 <a href="tel:${n}"><button>Call</button></a>
 <button onclick="deleteFamily(${i})">Delete</button>
-</p>`;
+</p>
+`;
 });
 
 let emergencyHTML="";
 emergency.forEach((n,i)=>{
-emergencyHTML += `<p>${n}
+emergencyHTML+=`
+<p>${n}
 <a href="tel:${n}"><button>Call</button></a>
 <button onclick="deleteEmergency(${i})">Delete</button>
-</p>`;
+</p>
+`;
 });
 
 document.getElementById("content").innerHTML=
@@ -127,10 +142,11 @@ ${familyHTML}
 <button onclick="addEmergency()">Add</button>
 
 ${emergencyHTML}
-
 `;
 
 }
+
+/* ADD */
 
 function addDoctor(){
 
@@ -168,6 +184,8 @@ showContacts();
 
 }
 
+/* DELETE */
+
 function deleteDoctor(i){
 
 doctors.splice(i,1);
@@ -191,6 +209,8 @@ localStorage.setItem("emergency",JSON.stringify(emergency));
 showContacts();
 
 }
+
+/* VOICE COMMAND */
 
 function startVoice(){
 
@@ -218,6 +238,8 @@ recognition.start();
 
 }
 
+/* SOS */
+
 function sos(){
 
 if(doctors.length>0){
@@ -232,12 +254,8 @@ window.location.href="tel:"+family[0];
 
 }
 
-showHome();
+/* GAMES */
 
-</script>
-
-</body>
-</html>
 function showGames(){
 
 document.getElementById("content").innerHTML=
@@ -254,9 +272,9 @@ document.getElementById("content").innerHTML=
 
 }
 
-/* Guess Game */
+/* GAME 1 */
 
-let random = Math.floor(Math.random()*5)+1;
+let random=Math.floor(Math.random()*5)+1;
 
 function game1(){
 
@@ -286,7 +304,7 @@ document.getElementById("result").innerHTML="Try Again!";
 
 }
 
-/* Math Game */
+/* GAME 2 */
 
 function game2(){
 
@@ -319,7 +337,7 @@ document.getElementById("mathResult").innerHTML="Wrong!";
 
 }
 
-/* Color Game */
+/* GAME 3 */
 
 function game3(){
 
@@ -346,7 +364,7 @@ document.getElementById("colorResult").innerHTML="Wrong!";
 
 }
 
-/* Click Speed */
+/* GAME 4 */
 
 let clicks=0;
 
@@ -372,3 +390,12 @@ clicks++;
 document.getElementById("clickResult").innerHTML="Clicks: "+clicks;
 
 }
+
+/* START */
+
+showHome();
+
+</script>
+
+</body>
+</html>
