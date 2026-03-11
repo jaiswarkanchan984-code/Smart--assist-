@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta charset="UTF-8">
 <title>Care Support Website</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
 
 body{
-font-family:Arial;
-text-align:center;
+font-family: Arial;
+text-align: center;
 background:#f2f2f2;
+margin:0;
+padding:20px;
 }
 
 h1{
@@ -16,25 +20,27 @@ color:green;
 }
 
 button{
-margin:6px;
-padding:10px 18px;
+margin:8px;
+padding:12px 20px;
 background:green;
 color:white;
 border:none;
 border-radius:6px;
-font-size:15px;
+font-size:16px;
+cursor:pointer;
 }
 
 input{
-padding:6px;
+padding:8px;
 margin:5px;
 }
 
-.box{
+#content{
 margin-top:20px;
 }
 
 </style>
+
 </head>
 
 <body>
@@ -44,33 +50,30 @@ margin-top:20px;
 <button onclick="showHome()">Home</button>
 <button onclick="showContacts()">Contacts</button>
 <button onclick="showGames()">Games</button>
-<button onclick="startVoice()">🎤 Voice</button>
-<button onclick="sos()">🚨 SOS</button>
 
-<div id="content" class="box"></div>
+<div id="content"></div>
 
 <script>
 
-/* STORAGE */
+/* LOAD SAVED NUMBERS */
 
-let doctors = JSON.parse(localStorage.getItem("doctors")) || [];
-let family = JSON.parse(localStorage.getItem("family")) || [];
-let emergency = JSON.parse(localStorage.getItem("emergency")) || [];
+let doctor = localStorage.getItem("doctor") || "";
+let family = localStorage.getItem("family") || "";
+let emergency = localStorage.getItem("emergency") || "";
 
 /* HOME */
 
 function showHome(){
 
-document.getElementById("content").innerHTML=
-`
+document.getElementById("content").innerHTML = `
 <h2>Welcome</h2>
-
 <p>This website helps Blind, Disabled and Old Age people.</p>
-
 <button onclick="speak()">🔊 Speak</button>
 `;
 
 }
+
+/* VOICE */
 
 function speak(){
 
@@ -82,190 +85,92 @@ speechSynthesis.speak(speech);
 
 }
 
-/* CONTACT SYSTEM */
+/* CONTACT PAGE */
 
 function showContacts(){
 
-let doctorHTML="";
-doctors.forEach((n,i)=>{
-doctorHTML+=`
-<p>${n}
-<a href="tel:${n}"><button>Call</button></a>
-<button onclick="deleteDoctor(${i})">Delete</button>
-</p>
-`;
-});
+document.getElementById("content").innerHTML = `
+<h2>Emergency Contacts</h2>
 
-let familyHTML="";
-family.forEach((n,i)=>{
-familyHTML+=`
-<p>${n}
-<a href="tel:${n}"><button>Call</button></a>
-<button onclick="deleteFamily(${i})">Delete</button>
-</p>
-`;
-});
-
-let emergencyHTML="";
-emergency.forEach((n,i)=>{
-emergencyHTML+=`
-<p>${n}
-<a href="tel:${n}"><button>Call</button></a>
-<button onclick="deleteEmergency(${i})">Delete</button>
-</p>
-`;
-});
-
-document.getElementById("content").innerHTML=
-`
-<h2>Doctor Numbers</h2>
-
-<input id="doctorInput" placeholder="Enter doctor number">
-<button onclick="addDoctor()">Add</button>
-
-${doctorHTML}
+<h3>Doctor</h3>
+<input id="doctorInput" placeholder="Enter doctor number" value="${doctor}">
+<button onclick="saveDoctor()">Save</button>
+<br>
+<a id="doctorCall" href="tel:${doctor}">
+<button>Call Doctor</button>
+</a>
 
 <hr>
 
-<h2>Family Numbers</h2>
-
-<input id="familyInput" placeholder="Enter family number">
-<button onclick="addFamily()">Add</button>
-
-${familyHTML}
+<h3>Family</h3>
+<input id="familyInput" placeholder="Enter family number" value="${family}">
+<button onclick="saveFamily()">Save</button>
+<br>
+<a id="familyCall" href="tel:${family}">
+<button>Call Family</button>
+</a>
 
 <hr>
 
-<h2>Emergency Numbers</h2>
-
-<input id="emergencyInput" placeholder="Enter emergency number">
-<button onclick="addEmergency()">Add</button>
-
-${emergencyHTML}
+<h3>Emergency</h3>
+<input id="emergencyInput" placeholder="Enter emergency number" value="${emergency}">
+<button onclick="saveEmergency()">Save</button>
+<br>
+<a id="emergencyCall" href="tel:${emergency}">
+<button>Call Emergency</button>
+</a>
 `;
 
 }
 
-/* ADD */
+/* SAVE FUNCTIONS */
 
-function addDoctor(){
+function saveDoctor(){
 
-let num=document.getElementById("doctorInput").value;
+doctor = document.getElementById("doctorInput").value;
 
-if(num){
-doctors.push(num);
-localStorage.setItem("doctors",JSON.stringify(doctors));
-showContacts();
-}
+localStorage.setItem("doctor", doctor);
 
-}
+alert("Doctor number saved");
 
-function addFamily(){
-
-let num=document.getElementById("familyInput").value;
-
-if(num){
-family.push(num);
-localStorage.setItem("family",JSON.stringify(family));
-showContacts();
-}
-
-}
-
-function addEmergency(){
-
-let num=document.getElementById("emergencyInput").value;
-
-if(num){
-emergency.push(num);
-localStorage.setItem("emergency",JSON.stringify(emergency));
-showContacts();
-}
-
-}
-
-/* DELETE */
-
-function deleteDoctor(i){
-
-doctors.splice(i,1);
-localStorage.setItem("doctors",JSON.stringify(doctors));
 showContacts();
 
 }
 
-function deleteFamily(i){
+function saveFamily(){
 
-family.splice(i,1);
-localStorage.setItem("family",JSON.stringify(family));
+family = document.getElementById("familyInput").value;
+
+localStorage.setItem("family", family);
+
+alert("Family number saved");
+
 showContacts();
 
 }
 
-function deleteEmergency(i){
+function saveEmergency(){
 
-emergency.splice(i,1);
-localStorage.setItem("emergency",JSON.stringify(emergency));
+emergency = document.getElementById("emergencyInput").value;
+
+localStorage.setItem("emergency", emergency);
+
+alert("Emergency number saved");
+
 showContacts();
 
 }
 
-/* VOICE COMMAND */
-
-function startVoice(){
-
-const recognition = new webkitSpeechRecognition();
-
-recognition.onresult = function(event){
-
-let text = event.results[0][0].transcript.toLowerCase();
-
-if(text.includes("doctor") && doctors.length>0){
-window.location.href="tel:"+doctors[0];
-}
-
-if(text.includes("family") && family.length>0){
-window.location.href="tel:"+family[0];
-}
-
-if(text.includes("emergency") && emergency.length>0){
-window.location.href="tel:"+emergency[0];
-}
-
-};
-
-recognition.start();
-
-}
-
-/* SOS */
-
-function sos(){
-
-if(doctors.length>0){
-window.location.href="tel:"+doctors[0];
-}
-
-setTimeout(()=>{
-if(family.length>0){
-window.location.href="tel:"+family[0];
-}
-},4000);
-
-}
-
-/* GAMES */
+/* GAMES PAGE */
 
 function showGames(){
 
-document.getElementById("content").innerHTML=
-`
+document.getElementById("content").innerHTML = `
 <h2>Games</h2>
 
-<button onclick="game1()">Guess Game</button>
-<button onclick="game2()">Math Game</button>
-<button onclick="game3()">Color Game</button>
-<button onclick="game4()">Click Speed</button>
+<button onclick="guessGame()">Guess Game</button>
+<button onclick="mathGame()">Math Game</button>
+<button onclick="colorGame()">Color Game</button>
 
 <div id="gameArea"></div>
 `;
@@ -274,50 +179,46 @@ document.getElementById("content").innerHTML=
 
 /* GAME 1 */
 
-let random=Math.floor(Math.random()*5)+1;
+let random = Math.floor(Math.random()*5)+1;
 
-function game1(){
+function guessGame(){
 
-document.getElementById("gameArea").innerHTML=
-`
-<h3>Guess Number</h3>
-
+document.getElementById("gameArea").innerHTML = `
+<h3>Guess Number Game</h3>
 <p>Guess number between 1 to 5</p>
 
-<input id="guess">
-
+<input id="guessInput">
 <button onclick="checkGuess()">Check</button>
 
-<p id="result"></p>
+<p id="guessResult"></p>
 `;
 
 }
 
 function checkGuess(){
 
-let g=document.getElementById("guess").value;
+let g = document.getElementById("guessInput").value;
 
-if(g==random)
-document.getElementById("result").innerHTML="Correct!";
+if(g == random)
+document.getElementById("guessResult").innerHTML="Correct!";
 else
-document.getElementById("result").innerHTML="Try Again!";
+document.getElementById("guessResult").innerHTML="Try Again!";
 
 }
 
 /* GAME 2 */
 
-function game2(){
+function mathGame(){
 
-let a=Math.floor(Math.random()*10);
-let b=Math.floor(Math.random()*10);
+let a = Math.floor(Math.random()*10);
+let b = Math.floor(Math.random()*10);
 
-document.getElementById("gameArea").innerHTML=
-`
+document.getElementById("gameArea").innerHTML = `
 <h3>Math Game</h3>
 
 <p>${a} + ${b} = ?</p>
 
-<input id="math">
+<input id="mathInput">
 
 <button onclick="checkMath(${a+b})">Check</button>
 
@@ -328,9 +229,9 @@ document.getElementById("gameArea").innerHTML=
 
 function checkMath(ans){
 
-let user=document.getElementById("math").value;
+let user = document.getElementById("mathInput").value;
 
-if(user==ans)
+if(user == ans)
 document.getElementById("mathResult").innerHTML="Correct!";
 else
 document.getElementById("mathResult").innerHTML="Wrong!";
@@ -339,59 +240,31 @@ document.getElementById("mathResult").innerHTML="Wrong!";
 
 /* GAME 3 */
 
-function game3(){
+function colorGame(){
 
-document.getElementById("gameArea").innerHTML=
-`
+document.getElementById("gameArea").innerHTML = `
 <h3>Color Game</h3>
 
 <p>What color is the sky?</p>
 
-<button onclick="color('blue')">Blue</button>
-<button onclick="color('green')">Green</button>
+<button onclick="checkColor('blue')">Blue</button>
+<button onclick="checkColor('green')">Green</button>
 
 <p id="colorResult"></p>
 `;
 
 }
 
-function color(c){
+function checkColor(c){
 
-if(c=="blue")
+if(c == "blue")
 document.getElementById("colorResult").innerHTML="Correct!";
 else
 document.getElementById("colorResult").innerHTML="Wrong!";
 
 }
 
-/* GAME 4 */
-
-let clicks=0;
-
-function game4(){
-
-clicks=0;
-
-document.getElementById("gameArea").innerHTML=
-`
-<h3>Click Speed Game</h3>
-
-<button onclick="count()">Click Fast</button>
-
-<p id="clickResult">Clicks: 0</p>
-`;
-
-}
-
-function count(){
-
-clicks++;
-
-document.getElementById("clickResult").innerHTML="Clicks: "+clicks;
-
-}
-
-/* START */
+/* START PAGE */
 
 showHome();
 
