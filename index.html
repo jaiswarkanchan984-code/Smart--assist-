@@ -1,5 +1,5 @@
+<!DOCTYPE html>
 <html>
-
 <head>
 <title>Care Support Website</title>
 
@@ -17,25 +17,19 @@ color:green;
 
 button{
 margin:10px;
-padding:10px 20px;
+padding:12px 20px;
 background:green;
 color:white;
 border:none;
-border-radius:5px;
-cursor:pointer;
+border-radius:6px;
+font-size:16px;
 }
 
 .box{
 margin-top:20px;
 }
 
-input{
-padding:8px;
-margin:10px;
-}
-
 </style>
-
 </head>
 
 <body>
@@ -43,7 +37,7 @@ margin:10px;
 <h1>Care Support Website</h1>
 
 <button onclick="showHome()">Home</button>
-<button onclick="showContact()">Contact</button>
+<button onclick="showContact()">Emergency</button>
 <button onclick="showGame()">Game</button>
 
 <div id="content" class="box"></div>
@@ -51,74 +45,115 @@ margin:10px;
 <script>
 
 function showHome(){
+
 document.getElementById("content").innerHTML=
 `
 <h2>Welcome</h2>
+
 <p>This website is for Blind, Disabled and Old Age people.</p>
+
 <button onclick="speak()">🔊 Speak</button>
+
+<br><br>
+
+<h3>Voice Control</h3>
+
+<p>If you want voice control press Start button</p>
+
+<button onclick="startVoice()">🎤 Start Voice</button>
+
+<p id="voiceStatus"></p>
 `;
+
+}
+
+function speak(){
+
+const speech = new SpeechSynthesisUtterance(
+"Welcome to Care Support Website"
+);
+
+speechSynthesis.speak(speech);
+
+}
+
+function startVoice(){
+
+document.getElementById("voiceStatus").innerHTML="Voice listening...";
+
+const recognition = new webkitSpeechRecognition();
+
+recognition.onresult = function(event){
+
+let text = event.results[0][0].transcript.toLowerCase();
+
+if(text.includes("doctor")){
+window.location.href="tel:9876543210";
+}
+
+if(text.includes("ambulance")){
+window.location.href="tel:108";
+}
+
+if(text.includes("family")){
+window.location.href="tel:9321748593";
+}
+
+};
+
+recognition.start();
+
 }
 
 function showContact(){
+
 document.getElementById("content").innerHTML=
 `
-<h2>Emergency Contacts</h2>
+<h2>Emergency Call</h2>
 
-<p>Doctor Number: 9876543210</p>
-<button onclick="callDoctor()">Call Doctor</button>
+<a href="tel:9876543210">
+<button>Call Doctor</button>
+</a>
 
-<p>Emergency Number: 108</p>
-<button onclick="callEmergency()">Call Emergency</button>
+<a href="tel:108">
+<button>Call Ambulance</button>
+</a>
 
-<p>Family Number: 9321748593</p>
-<button onclick="callFamily()">Call Family</button>
+<a href="tel:9321748593">
+<button>Call Family</button>
+</a>
 `;
+
 }
 
-let randomNumber = Math.floor(Math.random()*5)+1;
+let random = Math.floor(Math.random()*5)+1;
 
 function showGame(){
+
 document.getElementById("content").innerHTML=
 `
 <h2>Guess Game</h2>
+
 <p>Guess number between 1 to 5</p>
 
-<input id="guess" type="number">
+<input id="guess">
 
 <button onclick="check()">Check</button>
 
 <p id="result"></p>
 `;
-}
 
-function speak(){
-const speech = new SpeechSynthesisUtterance(
-"Welcome to Care Support Website"
-);
-speechSynthesis.speak(speech);
 }
 
 function check(){
 
-let guess = document.getElementById("guess").value;
+let g = document.getElementById("guess").value;
 
-if(guess == randomNumber)
+if(g==random)
 document.getElementById("result").innerHTML="Correct!";
 else
 document.getElementById("result").innerHTML="Try Again!";
 
-}
-
-function callDoctor(){
-window.location.href="tel:9876543210";
-}
-
-function callEmergency(){
-window.location.href="tel:108";
-}
-
-function callFamily(){
-window.location.href="tel:9321748593";
 }
 
 showHome();
@@ -126,5 +161,4 @@ showHome();
 </script>
 
 </body>
-
 </html>
