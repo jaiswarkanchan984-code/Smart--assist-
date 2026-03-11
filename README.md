@@ -1,169 +1,374 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Smart Assist</title>
+<title>Care Support Website</title>
 
 <style>
+
 body{
-  margin:0;
-  font-family:Arial;
-  background:#f2f2f2;
-  text-align:center;
+font-family:Arial;
+text-align:center;
+background:#f2f2f2;
 }
 
-header{
-  background:#075E54;
-  color:white;
-  padding:20px;
-  font-size:22px;
-  font-weight:bold;
-}
-
-.section{
-  padding:20px;
+h1{
+color:green;
 }
 
 button{
-  width:90%;
-  padding:15px;
-  margin:10px;
-  font-size:18px;
-  border:none;
-  border-radius:8px;
-  background:#25D366;
-  color:white;
-}
-
-button:hover{
-  background:#128C7E;
-}
-
-.gameBox{
-  background:white;
-  padding:15px;
-  margin:15px;
-  border-radius:10px;
-  box-shadow:0 2px 5px rgba(0,0,0,0.2);
+margin:5px;
+padding:10px 16px;
+background:green;
+color:white;
+border:none;
+border-radius:6px;
 }
 
 input{
-  width:85%;
-  padding:12px;
-  margin:8px;
-  font-size:16px;
+padding:6px;
+margin:5px;
 }
+
+.box{
+margin-top:20px;
+}
+
 </style>
 </head>
 
 <body>
 
-<header>
-🧑‍🦯 Smart Assist
-</header>
+<h1>Care Support Website</h1>
 
-<div class="section">
+<button onclick="showHome()">Home</button>
+<button onclick="showContacts()">Contacts</button>
+<button onclick="startVoice()">🎤 Voice</button>
+<button onclick="sos()">🚨 SOS</button>
 
-<h2>📞 Emergency Contacts</h2>
-
-<input id="familyInput" value="9321748592">
-<button onclick="callNumber(document.getElementById('familyInput').value)">
-Call Family
-</button>
-
-<input id="doctorInput" value="8104952319">
-<button onclick="callNumber(document.getElementById('doctorInput').value)">
-Call Doctor
-</button>
-
-<input id="newNumber" placeholder="Add New Contact Number">
-<button onclick="addNewContact()">Add & Call</button>
-
-<button onclick="callNumber('112')">
-Emergency Call (112)
-</button>
-
-<hr>
-
-<h2>🎮 Accessible Games</h2>
-
-<!-- Game 1 Voice Tap -->
-<div class="gameBox">
-<h3>Voice Tap Game</h3>
-<p>Tap screen anywhere 10 times</p>
-<p id="tapCount">Taps: 0</p>
-<button onclick="resetTap()">Reset</button>
-</div>
-
-<!-- Game 2 Memory Voice -->
-<div class="gameBox">
-<h3>Memory Voice Game</h3>
-<button onclick="memoryGame()">Hear Random Number</button>
-<p id="memoryText"></p>
-</div>
-
-<!-- Game 3 Big Button Game -->
-<div class="gameBox">
-<h3>Big Button Reaction</h3>
-<button onclick="bigButtonGame()" style="height:100px;font-size:24px;">
-PRESS ME
-</button>
-<p id="bigResult"></p>
-</div>
-
-</div>
+<div id="content" class="box"></div>
 
 <script>
 
-function speak(text){
-  if('speechSynthesis' in window){
-    window.speechSynthesis.cancel();
-    const speech=new SpeechSynthesisUtterance(text);
-    speech.lang="en-US";
-    setTimeout(()=>{window.speechSynthesis.speak(speech);},200);
-  }
+let doctors = JSON.parse(localStorage.getItem("doctors")) || [];
+let family = JSON.parse(localStorage.getItem("family")) || [];
+let emergency = JSON.parse(localStorage.getItem("emergency")) || [];
+
+function showHome(){
+
+document.getElementById("content").innerHTML=
+`
+<h2>Welcome</h2>
+<p>This website helps Blind, Disabled and Old Age people.</p>
+
+<button onclick="speak()">🔊 Speak</button>
+`;
+
 }
 
-function callNumber(num){
-  speak("Calling now");
-  window.location.href="tel:"+num;
+function speak(){
+
+const speech = new SpeechSynthesisUtterance(
+"Welcome to Care Support Website"
+);
+
+speechSynthesis.speak(speech);
+
 }
 
-function addNewContact(){
-  let num=document.getElementById("newNumber").value;
-  if(num!=""){
-    speak("Calling new number");
-    window.location.href="tel:"+num;
-  }else{
-    speak("Please enter number");
-  }
-}
+function showContacts(){
 
-let tapCount=0;
-document.body.addEventListener("click",function(){
-  tapCount++;
-  document.getElementById("tapCount").innerText="Taps: "+tapCount;
+let doctorHTML="";
+doctors.forEach((n,i)=>{
+doctorHTML += `<p>${n}
+<a href="tel:${n}"><button>Call</button></a>
+<button onclick="deleteDoctor(${i})">Delete</button>
+</p>`;
 });
 
-function resetTap(){
-  tapCount=0;
-  document.getElementById("tapCount").innerText="Taps: 0";
+let familyHTML="";
+family.forEach((n,i)=>{
+familyHTML += `<p>${n}
+<a href="tel:${n}"><button>Call</button></a>
+<button onclick="deleteFamily(${i})">Delete</button>
+</p>`;
+});
+
+let emergencyHTML="";
+emergency.forEach((n,i)=>{
+emergencyHTML += `<p>${n}
+<a href="tel:${n}"><button>Call</button></a>
+<button onclick="deleteEmergency(${i})">Delete</button>
+</p>`;
+});
+
+document.getElementById("content").innerHTML=
+`
+<h2>Doctor Numbers</h2>
+
+<input id="doctorInput" placeholder="Enter doctor number">
+<button onclick="addDoctor()">Add</button>
+
+${doctorHTML}
+
+<hr>
+
+<h2>Family Numbers</h2>
+
+<input id="familyInput" placeholder="Enter family number">
+<button onclick="addFamily()">Add</button>
+
+${familyHTML}
+
+<hr>
+
+<h2>Emergency Numbers</h2>
+
+<input id="emergencyInput" placeholder="Enter emergency number">
+<button onclick="addEmergency()">Add</button>
+
+${emergencyHTML}
+
+`;
+
 }
 
-function memoryGame(){
-  let random=Math.floor(Math.random()*100);
-  document.getElementById("memoryText").innerText="Remember this: "+random;
-  speak("Remember this number "+random);
+function addDoctor(){
+
+let num=document.getElementById("doctorInput").value;
+
+if(num){
+doctors.push(num);
+localStorage.setItem("doctors",JSON.stringify(doctors));
+showContacts();
 }
 
-function bigButtonGame(){
-  let time=Math.floor(Math.random()*5)+1;
-  document.getElementById("bigResult").innerText=
-  "You pressed after "+time+" seconds";
-  speak("Good job");
 }
+
+function addFamily(){
+
+let num=document.getElementById("familyInput").value;
+
+if(num){
+family.push(num);
+localStorage.setItem("family",JSON.stringify(family));
+showContacts();
+}
+
+}
+
+function addEmergency(){
+
+let num=document.getElementById("emergencyInput").value;
+
+if(num){
+emergency.push(num);
+localStorage.setItem("emergency",JSON.stringify(emergency));
+showContacts();
+}
+
+}
+
+function deleteDoctor(i){
+
+doctors.splice(i,1);
+localStorage.setItem("doctors",JSON.stringify(doctors));
+showContacts();
+
+}
+
+function deleteFamily(i){
+
+family.splice(i,1);
+localStorage.setItem("family",JSON.stringify(family));
+showContacts();
+
+}
+
+function deleteEmergency(i){
+
+emergency.splice(i,1);
+localStorage.setItem("emergency",JSON.stringify(emergency));
+showContacts();
+
+}
+
+function startVoice(){
+
+const recognition = new webkitSpeechRecognition();
+
+recognition.onresult = function(event){
+
+let text = event.results[0][0].transcript.toLowerCase();
+
+if(text.includes("doctor") && doctors.length>0){
+window.location.href="tel:"+doctors[0];
+}
+
+if(text.includes("family") && family.length>0){
+window.location.href="tel:"+family[0];
+}
+
+if(text.includes("emergency") && emergency.length>0){
+window.location.href="tel:"+emergency[0];
+}
+
+};
+
+recognition.start();
+
+}
+
+function sos(){
+
+if(doctors.length>0){
+window.location.href="tel:"+doctors[0];
+}
+
+setTimeout(()=>{
+if(family.length>0){
+window.location.href="tel:"+family[0];
+}
+},4000);
+
+}
+
+showHome();
 
 </script>
 
 </body>
 </html>
+function showGames(){
+
+document.getElementById("content").innerHTML=
+`
+<h2>Games</h2>
+
+<button onclick="game1()">Guess Game</button>
+<button onclick="game2()">Math Game</button>
+<button onclick="game3()">Color Game</button>
+<button onclick="game4()">Click Speed</button>
+
+<div id="gameArea"></div>
+`;
+
+}
+
+/* Guess Game */
+
+let random = Math.floor(Math.random()*5)+1;
+
+function game1(){
+
+document.getElementById("gameArea").innerHTML=
+`
+<h3>Guess Number</h3>
+
+<p>Guess number between 1 to 5</p>
+
+<input id="guess">
+
+<button onclick="checkGuess()">Check</button>
+
+<p id="result"></p>
+`;
+
+}
+
+function checkGuess(){
+
+let g=document.getElementById("guess").value;
+
+if(g==random)
+document.getElementById("result").innerHTML="Correct!";
+else
+document.getElementById("result").innerHTML="Try Again!";
+
+}
+
+/* Math Game */
+
+function game2(){
+
+let a=Math.floor(Math.random()*10);
+let b=Math.floor(Math.random()*10);
+
+document.getElementById("gameArea").innerHTML=
+`
+<h3>Math Game</h3>
+
+<p>${a} + ${b} = ?</p>
+
+<input id="math">
+
+<button onclick="checkMath(${a+b})">Check</button>
+
+<p id="mathResult"></p>
+`;
+
+}
+
+function checkMath(ans){
+
+let user=document.getElementById("math").value;
+
+if(user==ans)
+document.getElementById("mathResult").innerHTML="Correct!";
+else
+document.getElementById("mathResult").innerHTML="Wrong!";
+
+}
+
+/* Color Game */
+
+function game3(){
+
+document.getElementById("gameArea").innerHTML=
+`
+<h3>Color Game</h3>
+
+<p>What color is the sky?</p>
+
+<button onclick="color('blue')">Blue</button>
+<button onclick="color('green')">Green</button>
+
+<p id="colorResult"></p>
+`;
+
+}
+
+function color(c){
+
+if(c=="blue")
+document.getElementById("colorResult").innerHTML="Correct!";
+else
+document.getElementById("colorResult").innerHTML="Wrong!";
+
+}
+
+/* Click Speed */
+
+let clicks=0;
+
+function game4(){
+
+clicks=0;
+
+document.getElementById("gameArea").innerHTML=
+`
+<h3>Click Speed Game</h3>
+
+<button onclick="count()">Click Fast</button>
+
+<p id="clickResult">Clicks: 0</p>
+`;
+
+}
+
+function count(){
+
+clicks++;
+
+document.getElementById("clickResult").innerHTML="Clicks: "+clicks;
+
+}
